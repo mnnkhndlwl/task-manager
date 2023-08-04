@@ -22,6 +22,7 @@ export const addTask = async (req, res, next) => {
 export const updateTask = async (req, res, next) => {
   try {
     const task = await Task.findById(req.params.id);
+    if (!task) return next(createError(404, "Task Not found"));
     if (req.user.id === task.userId) {
       const updatedTask = await Task.findByIdAndUpdate(
         req.params.id,
@@ -49,6 +50,7 @@ export const updateTask = async (req, res, next) => {
 export const deleteTask = async (req, res, next) => {
   try {
     const task = await Task.findById(req.params.id);
+    if (!task) return next(createError(404, "Task Not found"));
     if (req.user.id === task.userId) {
       await Task.findByIdAndDelete(req.params.id);
       res.status(200).json("The Task has been deleted.");

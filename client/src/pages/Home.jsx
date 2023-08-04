@@ -9,8 +9,9 @@ import { userRequest } from "../utils/config";
 import { useFormik } from "formik";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
-import Grid from '@mui/material/Grid';
+import Grid from "@mui/material/Grid";
 import TaskCard from "../components/TaskCard";
+import Container from '@mui/material/Container';
 
 const style = {
   position: "absolute",
@@ -27,7 +28,7 @@ const style = {
 const stylecards = {
   position: "absolute",
   top: "25%",
-  m : 5,
+  m:5,
   flexGrow: 1,
 };
 
@@ -133,18 +134,23 @@ function Home() {
             <Typography sx={{ color: "red" }}>{error}</Typography>
           </Box>
         </Box>
+            
       </Modal>
-      <Box sx={stylecards}>
-        <Grid
-          container
-          spacing={{ xs: 5, md: 3 }}
-          columns={{ xs: 4, sm: 8, md: 12 }}
-        >
+      <Container sx={{ py: 8,my: 5 }} maxWidth="md">
+          {/* End hero unit */}
+          <Grid container spacing={4}>
           {tasks.map((task, index) => (
-            <TaskCard title={task.title} index={index} desc={task.desc} isCompleted={task.isCompleted}/>
+            <TaskCard
+              title={task.title}
+              id={task._id}
+              index={index}
+              desc={task.desc}
+              isCompleted={task.isCompleted}
+              fetchOrders={fetchOrders}
+            />
           ))}
         </Grid>
-      </Box>
+        </Container>
     </>
   );
 }

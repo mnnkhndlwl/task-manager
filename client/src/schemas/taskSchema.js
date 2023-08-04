@@ -1,8 +1,8 @@
 import * as Yup from 'yup'
 
 export const TaskSchema = Yup.object({
-    title: Yup.string().required('Please enter your username'),
-    desc: Yup.string().min(6).required('Please enter your password')
+    title: Yup.string().required('Please enter your title'),
+    desc: Yup.string().required('Please enter your description')
 })
 
 export const TaskInitialValues = {
