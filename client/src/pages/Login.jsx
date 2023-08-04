@@ -57,6 +57,7 @@ function Login() {
           password,
         });
         dispatch(loginSuccess(res.data));
+        window.location.reload();
         setLoading(false);
       } catch (error) {
         setError(error.response["data"]["message"]);
