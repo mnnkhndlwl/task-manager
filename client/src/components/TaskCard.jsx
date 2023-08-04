@@ -12,24 +12,39 @@ import { userRequest } from "../utils/config";
 import Modal from "@mui/material/Modal";
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
+import { useState } from "react";
 import { useFormik } from "formik";
 import Button from "@mui/material/Button";
+import LinearProgress from "@mui/material/LinearProgress";
 
 const TaskCard = ({ title, desc, isCompleted, index, fetchOrders, id }) => {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const [loading, setLoading] = useState(false);
 
   const handleChanged = async (event) => {
-    await userRequest.patch(`/api/task/update/${id}`, {
-      isCompleted: event.target.checked,
-    });
-    fetchOrders();
+    setLoading(true);
+    try {
+      await userRequest.patch(`/api/task/update/${id}`, {
+        isCompleted: event.target.checked,
+      });
+      fetchOrders();
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+    }
   };
 
   const handleDelete = async () => {
-    await userRequest.delete(`/api/task/delete/${id}`);
-    fetchOrders();
+    try {
+      setLoading(true);
+      await userRequest.delete(`/api/task/delete/${id}`);
+      fetchOrders();
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+    }
   };
 
   const style = {
@@ -51,19 +66,22 @@ const TaskCard = ({ title, desc, isCompleted, index, fetchOrders, id }) => {
     },
     onSubmit: async ({ title, desc }) => {
       try {
+        setLoading(true);
         const res = await userRequest.patch(`/api/task/update/${id}`, {
           title: title,
           desc: desc,
         });
         fetchOrders();
+        setLoading(false);
       } catch (error) {
-        console.log(error);
+        setLoading(false);
       }
     },
   });
 
   return (
     <>
+      {loading ? <LinearProgress /> : <></>}
       <Grid item key={index} xs={12} sm={8} md={4}>
         <Card
           sx={{

@@ -4,8 +4,6 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import { Link } from "react-router-dom";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
@@ -16,9 +14,9 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useFormik } from "formik";
 import { LoginInitialValues, LoginSchema } from "../schemas/loginSchema";
 import { useDispatch } from "react-redux";
-import {publicRequest} from "../utils/config";
+import { publicRequest } from "../utils/config";
 import { loginFailure, loginStart, loginSuccess } from "../redux/userSlice";
-
+import LinearProgress from "@mui/material/LinearProgress";
 
 function Copyright(props) {
   return (
@@ -43,6 +41,7 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 function Login() {
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const dispatch = useDispatch();
 
@@ -51,12 +50,14 @@ function Login() {
     validationSchema: LoginSchema,
     onSubmit: async ({ name, password }) => {
       dispatch(loginStart());
+      setLoading(true);
       try {
         const res = await publicRequest.post("/api/users/login", {
           name,
           password,
         });
         dispatch(loginSuccess(res.data));
+        setLoading(false);
       } catch (error) {
         setError(error.response["data"]["message"]);
         dispatch(loginFailure());
@@ -66,6 +67,7 @@ function Login() {
 
   return (
     <ThemeProvider theme={defaultTheme}>
+      {loading ? <LinearProgress /> : <></>}
       <Grid container component="main" sx={{ height: "100vh" }}>
         <CssBaseline />
         <Grid
@@ -118,9 +120,7 @@ function Login() {
                 value={values.name}
                 error={touched.name && errors.name !== undefined}
                 helperText={
-                  touched.name && errors.name !== undefined
-                    ? errors.name
-                    : ""
+                  touched.name && errors.name !== undefined ? errors.name : ""
                 }
               />
               <TextField
@@ -149,15 +149,13 @@ function Login() {
               </Button>
               <Typography sx={{ color: "red" }}>{error}</Typography>
               <Grid container>
-              <Grid item xs>
+                <Grid item xs>
                   <Link href="#" variant="body2">
                     Forgot password?
                   </Link>
                 </Grid>
                 <Grid item xs>
-                  <Link to="/signin">
-                    {"Don't have an account? Sign Up"}
-                  </Link>
+                  <Link to="/signin">{"Don't have an account? Sign Up"}</Link>
                 </Grid>
               </Grid>
               <Copyright sx={{ mt: 5 }} />

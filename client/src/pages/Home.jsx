@@ -1,5 +1,6 @@
 import Navbar from "../components/Navbar";
 import * as React from "react";
+import { useState } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
@@ -11,7 +12,8 @@ import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
 import TaskCard from "../components/TaskCard";
-import Container from '@mui/material/Container';
+import Container from "@mui/material/Container";
+import LinearProgress from "@mui/material/LinearProgress";
 
 const style = {
   position: "absolute",
@@ -28,7 +30,7 @@ const style = {
 const stylecards = {
   position: "absolute",
   top: "25%",
-  m:5,
+  m: 5,
   flexGrow: 1,
 };
 
@@ -45,10 +47,13 @@ function Home() {
   const handleClose = () => setOpen(false);
   const [error, setError] = React.useState("");
   const [tasks, setTasks] = React.useState([]);
+  const [loading, setLoading] = useState(false);
 
   const fetchOrders = async () => {
+    setLoading(true);
     const res = await userRequest.get(`/api/task/get`);
     setTasks(res.data);
+    setLoading(false);
   };
 
   React.useEffect(() => {
@@ -60,11 +65,13 @@ function Home() {
     validationSchema: TaskSchema,
     onSubmit: async ({ title, desc }) => {
       try {
+        setLoading(true);
         const res = await userRequest.post("/api/task/add", {
           title,
           desc,
         });
         fetchOrders();
+        setLoading(false);
       } catch (error) {
         setError(error.response["data"]["message"]);
       }
@@ -74,6 +81,7 @@ function Home() {
   return (
     <>
       <Navbar />
+      {loading ? <LinearProgress /> : <></>}
       <Button
         sx={buttonstyle}
         variant="contained"
@@ -134,23 +142,22 @@ function Home() {
             <Typography sx={{ color: "red" }}>{error}</Typography>
           </Box>
         </Box>
-            
       </Modal>
-      <Container sx={{ py: 8,my: 5 }} maxWidth="md">
-          {/* End hero unit */}
-          <Grid container spacing={4}>
+      <Container sx={{ py: 8, my: 5 }} maxWidth="md">
+        {/* End hero unit */}
+        <Grid container spacing={4}>
           {tasks.map((task, index) => (
             <TaskCard
               title={task.title}
               id={task._id}
-              index={index}
+              key={task._id}
               desc={task.desc}
               isCompleted={task.isCompleted}
               fetchOrders={fetchOrders}
             />
           ))}
         </Grid>
-        </Container>
+      </Container>
     </>
   );
 }

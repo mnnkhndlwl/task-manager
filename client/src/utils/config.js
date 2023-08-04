@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:3001/";
+const BASE_URL = "https://task-v88l.onrender.com/";
 
 const user = JSON.parse(localStorage.getItem("root"))?.user;
 
